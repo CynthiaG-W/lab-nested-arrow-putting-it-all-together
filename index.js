@@ -1,3 +1,4 @@
+
 // Step 1: Create the login tracker
 const createLoginTracker = (userInfo) => {
     let attemptCount = 0;
@@ -28,27 +29,31 @@ const user = {
 // Step 3: Create the login function
 const login = createLoginTracker(user);
 
-// Step 4: Make it interactive
-const readline = require('readline').createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-
-function askPassword() {
-    readline.question('Enter password: ', (input) => {
-        const result = login(input);
-        console.log(result);
-
-        // Stop if login successful or account locked
-        if (result === "Login successful" || result.includes("locked")) {
-            readline.close();
-        } else {
-            // Otherwise, ask again
-            askPassword();
-        }
+// Step 4: Interactive CLI only if run directly
+if (require.main === module) {
+    const readline = require('readline').createInterface({
+        input: process.stdin,
+        output: process.stdout
     });
+
+    function askPassword() {
+        readline.question('Enter password: ', (input) => {
+            const result = login(input);
+            console.log(result);
+
+            // Stop if login successful or account locked
+            if (result === "Login successful" || result.includes("locked")) {
+                readline.close();
+            } else {
+                askPassword();
+            }
+        });
+    }
+
+    askPassword();
 }
 
+// Export for testing
 module.exports = {
-  ...(typeof createLoginTracker !== 'undefined' && { createLoginTracker })
+    ...(typeof createLoginTracker !== 'undefined' && { createLoginTracker })
 };
